@@ -69,7 +69,7 @@ RUN set -xe \
   ;done
 
 # Remove build-essentials
-RUN apt-get remove build-essentia -y && apt autoremove
+RUN apt-get remove build-essential -y && apt autoremove
 
 ENV PATH=/usr/lib/postgresql/${PG_MAJOR}/bin:$PATH
 ENV GUACAMOLE_HOME=/config/guacamole
