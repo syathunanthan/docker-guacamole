@@ -1,9 +1,9 @@
 FROM library/tomcat:9-jre11
 
 ENV ARCH=amd64 \
-  GUAC_VER=1.3.0 \
+  GUAC_VER=1.4.0 \
   GUACAMOLE_HOME=/app/guacamole \
-  PG_MAJOR=9.6 \
+  PG_MAJOR=13 \
   PGDATA=/config/postgres \
   POSTGRES_USER=guacamole \
   POSTGRES_DB=guacamole_db
@@ -21,13 +21,14 @@ RUN curl -SLO "https://github.com/just-containers/s6-overlay/releases/download/v
 WORKDIR ${GUACAMOLE_HOME}
 
 # Install dependencies
+#RUN apt-get update && apt-cache pkgnames postgresql
 RUN apt-get update && apt-get install -y \
     libcairo2-dev libjpeg62-turbo-dev libpng-dev \
     libossp-uuid-dev libavcodec-dev libavutil-dev \
     libswscale-dev freerdp2-dev libfreerdp-client2-2 libpango1.0-dev \
     libssh2-1-dev libtelnet-dev libvncserver-dev \
     libpulse-dev libssl-dev libvorbis-dev libwebp-dev libwebsockets-dev \
-    ghostscript postgresql-${PG_MAJOR} \
+    ghostscript postgresql-${PG_MAJOR} build-essential \
   && rm -rf /var/lib/apt/lists/*
 
 # Link FreeRDP to where guac expects it to be
@@ -66,6 +67,9 @@ RUN set -xe \
     && cp guacamole-${i}-${GUAC_VER}/guacamole-${i}-${GUAC_VER}.jar ${GUACAMOLE_HOME}/extensions-available/ \
     && rm -rf guacamole-${i}-${GUAC_VER} guacamole-${i}-${GUAC_VER}.tar.gz \
   ;done
+
+# Remove build-essentials
+RUN apt-get remove build-essential
 
 ENV PATH=/usr/lib/postgresql/${PG_MAJOR}/bin:$PATH
 ENV GUACAMOLE_HOME=/config/guacamole
